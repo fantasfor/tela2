@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101319">
+  <meta name="description" content="Compartilhe sua tela em tempo real com outras pessoas, direto do navegador.">
+  <title>Compartilhar Tela</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Compartilhar Tela, início">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span>tela<span class="brand-light">livre</span></span>
+    </a>
+    <div class="topbar-note"><span class="status-dot"></span> Compartilhamento privado e direto</div>
+  </header>
+
+  <main>
+    <section id="home-screen" class="home-screen">
+      <div class="hero">
+        <div class="eyebrow"><span class="eyebrow-line"></span> SUA TELA, EM TEMPO REAL</div>
+        <h1>Mostre. Explique.<br><span>Resolva junto.</span></h1>
+        <p class="hero-copy">Compartilhe sua tela com quem você quiser, direto do navegador. Sem instalar nada, sem complicação.</p>
+        <div class="feature-row">
+          <span><span class="check">✓</span> Grátis para começar</span>
+          <span><span class="check">✓</span> Sem cadastro</span>
+          <span><span class="check">✓</span> Até 6 pessoas</span>
+        </div>
+      </div>
+
+      <section class="entry-card" aria-labelledby="entry-title">
+        <div class="card-heading">
+          <div class="card-icon" aria-hidden="true">↗</div>
+          <div>
+            <h2 id="entry-title">Vamos começar</h2>
+            <p>Crie uma sala ou entre com um link.</p>
+          </div>
+        </div>
+        <form id="join-form">
+          <label for="display-name">Como podemos te chamar?</label>
+          <input id="display-name" name="name" autocomplete="nickname" maxlength="32" placeholder="Seu nome" required>
+          <label for="room-link">Link ou código da sala</label>
+          <div class="room-input-wrap">
+            <span aria-hidden="true">#</span>
+            <input id="room-link" name="room" autocomplete="url" placeholder="Cole o link ou digite o código" required>
+          </div>
+          <label for="room-password">Senha da sala <span class="optional">(opcional)</span></label>
+          <input id="room-password" name="password" type="password" autocomplete="current-password" maxlength="100" placeholder="Defina uma senha ou informe a recebida">
+          <p id="join-error" class="form-error" role="alert" hidden></p>
+          <button class="button button-primary join-button" type="submit">Entrar na sala <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="divider"><span>OU</span></div>
+        <button id="create-room" class="button button-secondary" type="button">＋ Criar uma sala nova</button>
+        <p class="privacy-note"><span aria-hidden="true">◈</span> Sua tela só é transmitida depois que você autorizar.</p>
+      </section>
+    </section>
+
+    <section id="room-screen" class="room-screen" hidden>
+      <div class="room-header">
+        <div class="room-title">
+          <button id="leave-room" class="icon-button back-button" type="button" aria-label="Sair da sala">←</button>
+          <div>
+            <div class="room-kicker">SALA DE COMPARTILHAMENTO</div>
+            <h1 id="room-name">Sala</h1>
+          </div>
+        </div>
+        <div class="room-actions">
+          <span class="people-count"><span class="status-dot"></span><span id="participant-count">1 pessoa</span></span>
+          <button id="copy-link" class="button button-secondary copy-button" type="button"><span aria-hidden="true">▣</span> Copiar convite</button>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <section class="stage" aria-label="Telas compartilhadas">
+          <div id="empty-state" class="empty-state">
+            <div class="empty-art" aria-hidden="true">
+              <div class="art-screen"><div class="art-screen-top"><i></i><i></i><i></i></div><div class="art-content"><span></span><span></span><span></span></div></div>
+              <div class="art-cursor">↖</div>
+              <div class="art-spark spark-one">✳</div><div class="art-spark spark-two">✦</div>
+            </div>
+            <h2>Ninguém está compartilhando ainda</h2>
+            <p>Inicie o compartilhamento para mostrar sua tela às pessoas nesta sala.</p>
+            <button id="start-share-empty" class="button button-primary" type="button"><span aria-hidden="true">▣</span> Compartilhar minha tela</button>
+          </div>
+          <div id="screen-grid" class="screen-grid" hidden></div>
+          <div class="stage-footer">
+            <span><span class="secure-icon" aria-hidden="true">◆</span> Mídia protegida pelo WebRTC</span>
+            <span id="room-code-label"></span>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="panel-tabs"><span class="panel-tab active">Conversa</span><span class="chat-room-label">na sala</span></div>
+          <div id="chat-messages" class="chat-messages" aria-live="polite">
+            <div class="chat-welcome"><span class="welcome-icon">✦</span><strong>Boas-vindas à sala!</strong><span>As mensagens aparecem aqui para todo mundo.</span></div>
+          </div>
+          <form id="chat-form" class="chat-form">
+            <label class="sr-only" for="chat-input">Escreva uma mensagem</label>
+            <input id="chat-input" maxlength="1000" placeholder="Escreva uma mensagem..." autocomplete="off">
+            <button class="send-button" type="submit" aria-label="Enviar mensagem">↑</button>
+          </form>
+        </aside>
+      </div>
+
+      <div class="control-dock">
+        <div class="dock-info"><span class="live-indicator"></span><span id="share-status">Você está na sala</span></div>
+        <button id="start-share" class="button button-primary share-button" type="button"><span aria-hidden="true">▣</span> Compartilhar tela</button>
+        <button id="stop-share" class="button button-stop share-button" type="button" hidden><span aria-hidden="true">■</span> Parar compartilhamento</button>
+        <label class="audio-option"><input id="include-audio" type="checkbox"><span class="custom-checkbox"></span> Incluir áudio</label>
+        <button id="leave-room-bottom" class="button button-leave" type="button">Sair da sala</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer"><span>Feito para compartilhar ideias.</span><span>O navegador pedirá sua autorização antes de transmitir.</span></footer>
+</body>
+</html>
